@@ -100,3 +100,6 @@ It should be safe to stage all changes (unless you made changes to files outside
 9. **Submit a link to your branch**
    
 Verify that the assignment branch was pushed to your remote repository with your changes. Copy a link to your branch and submit it for that assignment on canvas.
+
+ sudo mv $HOME/.gradle/caches /media/hook/8ff3ada7-ea3d-49ed-ad92-452a1772dacd/stuff/gradle-caches
+ sudo ln -s /media/hook/8ff3ada7-ea3d-49ed-ad92-452a1772dacd/stuff/gradle-caches
