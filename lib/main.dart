@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'CS492 Weather App'),
@@ -64,23 +64,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<String> _myNames = [
     "Dan",
-    "Steve"
+    "Steve",
+    "Alice",
+    "Bob",
+    "Charlie",
+    "David",
+    "Eve",
+    "Frank",
+    "Grace",
+    "Harry",
   ];
 
   String? _myName;
+  int _currentIndex = 0; // Track the current index
 
   @override
   void initState() {
     super.initState();
-    _myName = _myNames[0];   
-    
+    _myName = _myNames[_currentIndex]; // Initialize with the first name
   }
 
   void onPressed(){
     setState(() {
-      _myName = _myNames[1];
+      _currentIndex = (_currentIndex + 1) % _myNames.length; // Increment index and cycle through names
+      _myName = _myNames[_currentIndex]; // Update the name
     });
-    
   }
 
   @override
