@@ -14,7 +14,14 @@ void main() async {
   Map<String, dynamic> forecastHourlyJsonData = await getJsonFromUrl(forecastHourlyUrl);
 
   processForecasts(forecastJsonData);
+  processForecasts(forecastHourlyJsonData);
 
+  // // get a set of all keys in the forecast and hourly forecast json data
+  // Set<String> forecastKeys = forecastJsonData["properties"]["periods"][0].keys.toSet();
+  // Set<String> forecastHourlyKeys = forecastHourlyJsonData["properties"]["periods"][0].keys.toSet();
+  // Set<String> allKeys = forecastKeys.union(forecastHourlyKeys);
+
+  // print(allKeys);
   return;
 }
 
@@ -23,43 +30,66 @@ Future<Map<String, dynamic>> getJsonFromUrl(String url) async {
   return convert.jsonDecode(r.body);
 }
 
-void processForecasts(Map<String, dynamic> forecasts){
+void processForecasts(Map<String, dynamic> forecasts) {
   // TODO: pass the array of forcasts in from main
   // For loop through the forecasts and process each forecast with the
   // processForecast function below
   
-  for (var forecast in forecasts["properties"]["periods"]){
+  for (Map<String, dynamic> forecast in forecasts["properties"]["periods"]) {
     processForecast(forecast);
   }
 
 }
 
-void processForecast(Map<String, dynamic> forecast){
+void processForecast(Map<String, dynamic> forecast) {
   // TODO: Pass a forecast entry (either hourly or bidaily), and extract
   // The proper values that will be useful. i.e. temperature, shortForecast, longForecast
   // for now, don't return anything, just assign values for each
   // i.e. String shortForcast = "";
 
-  String shortForecast = forecast["shortForecast"];
-  String longForecast = forecast["detailedForecast"];
-  int temperature = forecast["temperature"];
-  String temperatureUnit = forecast["temperatureUnit"];
-  String startTime = forecast["startTime"];
-  String endTime = forecast["endTime"];
-  String name = forecast["name"];
-  int number = forecast["number"];
-  String windSpeed = forecast["windSpeed"];
-  String windDirection = forecast["windDirection"];
-  String icon = forecast["icon"];
+  // keys: number, name, startTime, endTime, isDaytime, temperature, temperatureUnit, temperatureTrend, probabilityOfPrecipitation, windSpeed, windDirection, icon, shortForecast, detailedForecast, dewpoint, relativeHumidity
 
-  // print out the values for now
-  print("Short Forecast: $shortForecast");
-  print("Long Forecast: $longForecast");
-  print("Temperature: $temperature $temperatureUnit");
-  print("Start Time: $startTime");
-  print("End Time: $endTime");
-  print("Name: $name");
-  print("Number: $number");
-  print("Wind Speed: $windSpeed");
+  Map<String, dynamic> keys = {
+    //"number": int,
+    "name": String,
+    "startTime": String,
+    "endTime": String,
+    "isDaytime": bool,
+    "temperature": int,
+    //"temperatureUnit": String,
+    "temperatureTrend": String,
+    "probabilityOfPrecipitation": Map<String, dynamic>,
+    "windSpeed": String,
+    "windDirection": String,
+    "icon": String,
+    "shortForecast": String,
+    "detailedForecast": String,
+    "dewpoint": Map<String, dynamic>,
+    "relativeHumidity": Map<String, dynamic>
+  };
 
+  Map<String, dynamic> units = {
+    "percent": "%",
+    "degC": "°C",
+    "m/s": "m/s",
+    "degF": "°F",
+    "w": "w"
+  };
+
+  for (String key in keys.keys) {
+    // if the type is map, we need the value + unitCode : wmoUnit
+    if (keys[key] == Map<String, dynamic>) {
+      // check there is data for the key
+      if (forecast[key] != null && forecast[key] != '') {
+        String unit = units[forecast[key]["unitCode"].split(":")[1]];
+        print("$key: ${forecast[key]["value"]} $unit");
+      }
+    } else {
+      // check there is data for the key
+      if (forecast[key] != null && forecast[key] != '') {
+        print("$key: ${forecast[key]}");
+      }
+    }
+  }
+  print("\n");
 }
