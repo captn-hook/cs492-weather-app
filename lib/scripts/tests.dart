@@ -16,6 +16,37 @@ void testLocation() async {
 
   location.getLocationFromAddress("oijeqofwkjfla", "asdfsd", "98839829382");
 
+  List<Map<String, String>> locations = [
+    {"city": "Bend", "state": "OR", "zip": "97701"},
+    {"city": "New York", "state": "NY", "zip": "10001"},
+    {"city": "Chicago", "state": "IL", "zip": "60601"},
+    {"city": "Miami", "state": "FL", "zip": "33101"},
+    {"city": "Albuquerque", "state": "NM", "zip": "87101"}
+  ];
+
+  for (Map<String, String> loc in locations){
+    print("Getting location for ${loc["city"]}, ${loc["state"]} ${loc["zip"]}");
+    var loca = await location.getLocationFromAddress(loc["city"]!, loc["state"]!, loc["zip"]!);
+    // print the location as a string
+    print("Location:");
+    print(loca.toString());
+
+    // I/flutter ( 3174): Location:
+    // I/flutter ( 3174): City: Bend, State: Oregon, Zip: 97703, Lat: 44.0581728, Lon: -121.31530959999999
+    // I/flutter ( 3174): Getting location for New York, NY 10001
+    // I/flutter ( 3174): Location:
+    // I/flutter ( 3174): City: New York, State: New York, Zip: 10001, Lat: 40.753685399999995, Lon: -73.9991637
+    // I/flutter ( 3174): Getting location for Chicago, IL 60601
+    // I/flutter ( 3174): Location:
+    // I/flutter ( 3174): City: Chicago, State: Illinois, Zip: 60601, Lat: 41.8839927, Lon: -87.61970559999999
+    // I/flutter ( 3174): Getting location for Miami, FL 33101
+    // I/flutter ( 3174): Location:
+    // I/flutter ( 3174): City: Miami, State: Florida, Zip: 33101, Lat: 25.7783254, Lon: -80.1990136
+    // I/flutter ( 3174): Getting location for Albuquerque, NM 87101
+    // I/flutter ( 3174): Location:
+    // I/flutter ( 3174): City: Albuquerque, State: New Mexico, Zip: 87101, Lat: 35.0720392, Lon: -106.64663060000001
+  }  
+
 }
 
 
