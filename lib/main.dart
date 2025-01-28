@@ -90,6 +90,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Widget ForecastSummaries(List<forecast.Forecast> forecasts) {
+    List<Widget> forecastWidgets = [];
+    for (var forecast in forecasts) {
+      forecastWidgets.add(ForecastSummaryWidget(currentForecast: forecast));
+    }
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: forecastWidgets),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -122,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // This may clip off of the edge of the screen
               // Check forecastSummaryWidget for another TODO
 
-              _forecasts.isNotEmpty ? ForecastSummaryWidget(currentForecast: _forecasts[0]) : Text("")
+              ForecastSummaries(_forecasts),
             ],
           ),
         ),

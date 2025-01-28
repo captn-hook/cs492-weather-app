@@ -9,6 +9,17 @@ class ForecastSummaryWidget extends StatelessWidget {
 
   final forecast.Forecast _forecast;
 
+  Widget frameWidget(Widget child) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+      ),
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: update this widget to look better
@@ -17,9 +28,12 @@ class ForecastSummaryWidget extends StatelessWidget {
     // Update the text as well, so the name, forecast, and temperature have different formatting
     return Column(
       children: [
-        Text(_forecast.name ?? ""),
-        Text(_forecast.shortForecast),
-        Text("${_forecast.temperature}${_forecast.temperatureUnit}")
+        frameWidget(Text(_forecast.name??'', style: TextStyle(fontWeight: FontWeight.bold))),
+        frameWidget(Row(children: [
+          Text(_forecast.shortForecast??'', style: TextStyle(fontStyle: FontStyle.italic)),
+          Text(' - '),
+          Text("${_forecast.temperature.toString()??''}${_forecast.temperatureUnit??''}", style: TextStyle(fontWeight: FontWeight.bold)),
+        ])),
       ],
     );
   }
