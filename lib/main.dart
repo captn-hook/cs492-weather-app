@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:weatherapp/scripts/location.dart' as location;
 import 'package:weatherapp/scripts/forecast.dart' as forecast;
 import 'package:weatherapp/widgets/forecast_summaries_widget.dart';
+import 'package:weatherapp/widgets/forecast_summary_widget.dart';
 import 'package:weatherapp/widgets/forecast_widget.dart';
 import 'package:weatherapp/widgets/location_widget.dart';
 
@@ -65,9 +66,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   List<forecast.Forecast> _forecastsHourly = [];
-  // create a new variable for _forecasts
+  // TODO: list
+  List<forecast.Forecast> _forecasts = [];
   forecast.Forecast? _activeForecast;
   location.Location? _location;
+  // active day 
+  String? _activeDay;
 
   @override
   void initState() {
@@ -81,6 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // TODO: create a new function getForecasts that returns forecast.getForecastFromPoints
+  Future<List<forecast.Forecast>> getForecasts(location.Location currentLocation) async {
+    return forecast.getForecastFromPoints(currentLocation.latitude, currentLocation.longitude);
+  }
 
   void setActiveHourlyForecast(int i){
     setState(() {
@@ -89,21 +96,44 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // create a new function: setActiveHourlyForecast that updates _activeForecast with _forecasts[i]
+  void setActiveForecast(int i){
+    setState(() {
+      _activeForecast = _forecasts[i];
+      _activeDay = _activeForecast!.startTime;
+    });
+  }
 
 
   void setLocation() async {
     if (_location == null){
       location.Location currentLocation = await location.getLocationFromGps();
-
+      print('yuh');
       List<forecast.Forecast> currentHourlyForecasts = await getHourlyForecasts(currentLocation);
-
+      List<forecast.Forecast> currentForecasts = await getForecasts(currentLocation);
+      print(currentForecasts);
       setState(() {
         _location = currentLocation;
         _forecastsHourly = currentHourlyForecasts;
+        _forecasts = currentForecasts;
         _activeForecast = _forecastsHourly[10];
         
       });
     }
+  }
+
+  List<forecast.Forecast> getFilteredHourlyForecasts(List<forecast.Forecast> hr){
+    if (_activeForecast == null){
+      return hr;
+    }
+    List<forecast.Forecast> filtered = [];
+    for (var i = 0; i < hr.length; i++){
+      // if the forecast is within the 24 hours of the active forecast, day start time is 8:00
+      // convert and subtract 8 hours from the active forecast start time
+      if (hr[i].startTime!.substring(0, 10) == _activeForecast!.startTime!.substring(0, 10)){
+        filtered.add(hr[i]);
+      }
+    }
+    return filtered;
   }
 
   @override
@@ -132,7 +162,9 @@ class _MyHomePageState extends State<MyHomePage> {
               LocationWidget(location: _location),
               _activeForecast != null ? ForecastWidget(forecast: _activeForecast!) : Text(""),
               // TODO add a new ForecastSummariesWidget for the daily forecasts
-              _forecastsHourly.isNotEmpty ? ForecastSummariesWidget(forecasts: _forecastsHourly, setActiveForecast: setActiveHourlyForecast) : Text("")
+              _forecasts.isNotEmpty ? ForecastSummariesWidget(forecasts: _forecasts, setActiveForecast: setActiveForecast) : Text(""),
+              SizedBox(height: 20),
+              _forecastsHourly.isNotEmpty ? ForecastSummariesWidget(forecasts: getFilteredHourlyForecasts(_forecastsHourly), setActiveForecast: setActiveHourlyForecast) : Text("")
             ],
           ),
         ),
