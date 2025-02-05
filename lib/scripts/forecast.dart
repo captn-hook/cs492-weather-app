@@ -72,16 +72,62 @@ class Forecast{
           "tempHighLow: ${tempHighLow ?? "None"}";
   }
 
-  String getIconPath(){
-    // TODO: Keep adding to this logic to try to get rid of question marks
-    // TODO: change the location in your android phone to at least 5 different location
-    // with different climates so you can eliminate more question marks
-    if (shortForecast.toLowerCase().contains("sunny")){
-      return "assets/weather_icons/sunny.svg";
+  String getIconPath() {
+    Map<String, String> iconMap = {
+      "sunny": "assets/weather_icons/sunny.svg",
+      "mostly sunny": "assets/weather_icons/mostly_sunny.svg",
+      "partly sunny": "assets/weather_icons/partly_clear.svg",
+      "partly cloudy": "assets/weather_icons/partly_cloudy.svg",
+      "mostly cloudy": "assets/weather_icons/mostly_cloudy.svg",
+      "cloudy": "assets/weather_icons/cloudy.svg",
+      "clear": "assets/weather_icons/clear.svg",
+      "mostly clear": "assets/weather_icons/mostly_clear.svg",
+      "patchy fog": "assets/weather_icons/fog.svg",
+      "areas of fog": "assets/weather_icons/fog.svg",
+      "slight chance light snow": "assets/weather_icons/snow_showers.svg",
+      "chance light snow": "assets/weather_icons/snow_showers.svg",
+      "light snow likely": "assets/weather_icons/snow_showers.svg",
+      "light snow": "assets/weather_icons/snow_showers.svg",
+      "heavy snow likely": "assets/weather_icons/heavy_snow.svg",
+      "heavy snow": "assets/weather_icons/heavy_snow.svg",
+      "snow": "assets/weather_icons/snow_showers.svg",
+      "slight chance light rain": "assets/weather_icons/droplet_light.svg",
+      "chance light rain": "assets/weather_icons/droplet_light.svg",
+      "light rain likely": "assets/weather_icons/droplet_light.svg",
+      "light rain": "assets/weather_icons/droplet_light.svg",
+      "rain": "assets/weather_icons/droplet_clear.svg",
+      "slight chance rain and snow": "assets/weather_icons/wintry_mix.svg",
+      "chance rain and snow": "assets/weather_icons/wintry_mix.svg",
+      "rain and snow likely": "assets/weather_icons/wintry_mix.svg",
+      "rain and snow": "assets/weather_icons/wintry_mix.svg",
+      "patchy blowing dust": "assets/weather_icons/dust.svg",
+      "slight chance freezing drizzle": "assets/weather_icons/drizzle.svg",
+      "chance freezing drizzle": "assets/weather_icons/drizzle.svg",
+      "freezing drizzle likely": "assets/weather_icons/drizzle.svg",
+      "slight chance rain showers": "assets/weather_icons/showers.svg",
+      "chance rain showers": "assets/weather_icons/showers.svg",
+      "rain showers likely": "assets/weather_icons/showers.svg",
+      "rain showers": "assets/weather_icons/showers.svg",
+      "slight chance showers and thunderstorms": "assets/weather_icons/strong_tstorms.svg",
+      "chance showers and thunderstorms": "assets/weather_icons/strong_tstorms.svg",
+      "showers and thunderstorms likely": "assets/weather_icons/strong_tstorms.svg",
+      "showers and thunderstorms": "assets/weather_icons/strong_tstorms.svg",
+      "patchy blowing snow": "assets/weather_icons/blowing_snow.svg",
+      "slight chance snow showers": "assets/weather_icons/snow_showers.svg",
+      "chance snow showers": "assets/weather_icons/snow_showers.svg",
+      "chance sleet": "assets/weather_icons/sleet_hail.svg",
+      "chance freezing rain": "assets/weather_icons/icy.svg",
+      "freezing rain likely": "assets/weather_icons/icy.svg",
+      "freezing rain": "assets/weather_icons/icy.svg",
+      "areas of frost": "assets/weather_icons/fog.svg"
+    };
+
+    for (String key in iconMap.keys) {
+      if (shortForecast.toLowerCase().contains(key)) {
+        return iconMap[key]!;
+      }
     }
-    else {
-      return "assets/weather_icons/question.svg";
-    }
+    return "assets/weather_icons/question.svg";
   }
 }
 
