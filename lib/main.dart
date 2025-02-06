@@ -65,7 +65,8 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
   List<forecast.Forecast> _forecastsHourly = [];
   List<forecast.Forecast> _filteredForecastsHourly= [];
@@ -77,7 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    setLocation();
+    _tabController = TabController(length: 2, vsync: this);
+    if (_location == null) {
+      setLocation();
+    }
 
   }
 
@@ -118,9 +122,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return _forecastsHourly.where((f)=>time.equalDates(f.startTime, _dailyForecasts[i].startTime)).toList();
   }
 
-  void setLocation() async {
-    if (_location == null){
-      location.Location currentLocation = await location.getLocationFromGps();
+  void setLocation([location.Location? currentLocation]) async {
+    print("Setting location");
+      if (currentLocation == null){
+        currentLocation = await location.getLocationFromGps();
+        print(currentLocation);
+      }
+      print(currentLocation);
 
       List<forecast.Forecast> currentHourlyForecasts = await getHourlyForecasts(currentLocation);
       List<forecast.Forecast> currentForecasts = await getForecasts(currentLocation);
@@ -135,8 +143,20 @@ class _MyHomePageState extends State<MyHomePage> {
         
         
       });
-    }
+    
   }
+
+  void setToAddress(city, state, zip, tabController) async {
+    if (city == null || state == null || zip == null){
+      setLocation();
+      return;
+    }
+    location.Location? currentLocation = await location.getLocationFromAddress(city, state, zip);
+    setLocation(currentLocation);
+    if (tabController != null) 
+      tabController.animateTo(0);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -159,6 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // the App.build method, and use it to set our appbar title.
           title: Text(widget.title),
           bottom: TabBar(
+            controller: _tabController,
             tabs: [
               Tab(icon: Icon(Icons.sunny_snowing)),
               Tab(icon: Icon(Icons.edit_location_alt))
@@ -166,6 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ),
         body:TabBarView(
+          controller: _tabController,
           children: [ForecastTabWidget(
             location: _location, 
             activeForecast: _activeForecast,
@@ -173,23 +195,70 @@ class _MyHomePageState extends State<MyHomePage> {
             filteredForecastsHourly: _filteredForecastsHourly,
             setActiveForecast: setActiveForecast,
             setActiveHourlyForecast: setActiveHourlyForecast),
-          LocationTabWidget()]
+          LocationTabWidget(setToAddress: setToAddress, tabController: _tabController)
+        ]
         ),
       ),
     );
   }
 }
 
+
+
+
 // TODO: Add a button to this widget that sets the active location to the phone's GPS location
 // TODO: Add 3 text fields for city state zip and a submit button that sets the location based on the user's entries
+
 class LocationTabWidget extends StatelessWidget {
   const LocationTabWidget({
     super.key,
+    required this.setToAddress,
+    required this.tabController
   });
 
-  @override
+  final Function setToAddress;
+  final TabController tabController;
+
+  @override //
   Widget build(BuildContext context) {
-    return Text("PLACEHOLDER!!!!!");
+    // if any of the fields are null, the location is gotten from the GPS
+    final TextEditingController cityController = TextEditingController();
+    final TextEditingController stateController = TextEditingController();
+    final TextEditingController zipController = TextEditingController();
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Center(
+        child: Column(
+          children: [
+            TextField(
+              controller: cityController,
+              decoration: InputDecoration(
+                labelText: 'City',
+              ),
+            ),
+            TextField(
+              controller: stateController,
+              decoration: InputDecoration(
+                labelText: 'State',
+              ),
+            ),
+            TextField(
+              controller: zipController,
+              decoration: InputDecoration(
+                labelText: 'Zip',
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setToAddress(cityController.text, stateController.text, zipController.text, tabController);
+              },
+              child: Text('Submit'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
