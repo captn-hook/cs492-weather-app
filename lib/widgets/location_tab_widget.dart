@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:weatherapp/scripts/location.dart' as location;
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:convert';
 
 // TODO:
 // Refer to this documentation:
@@ -21,11 +24,19 @@ class LocationTabWidget extends StatefulWidget {
 
   @override
   State<LocationTabWidget> createState() => _LocationTabWidgetState();
+
 }
 
 class _LocationTabWidgetState extends State<LocationTabWidget> {
 
   final List<location.Location> _savedLocations = [];
+
+  // load the locations from a file
+  @override
+  void initState() {
+    super.initState();
+    loadLocations();
+  }
 
   void _setLocationFromAddress(String city, String state, String zip) async {
     // set location to null temporarily while it finds a new location
@@ -46,6 +57,28 @@ class _LocationTabWidgetState extends State<LocationTabWidget> {
   void _addLocation(location.Location location){
     setState(() {
       _savedLocations.add(location);
+    });
+
+    // save the locations to a file
+    saveLocations();
+  }
+
+  void saveLocations() async {
+    // get the directory
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/locations.json');
+    await file.writeAsString(jsonEncode(_savedLocations));
+  }
+
+  void loadLocations() async {
+    // get the directory
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/locations.json');
+    final data = await file.readAsString();
+    final List<dynamic> locations = jsonDecode(data);
+    final List<location.Location> loadedLocations = locations.map((loc) => location.Location.fromJson(loc)).toList();
+    setState(() {
+      _savedLocations.addAll(loadedLocations);
     });
   }
 
