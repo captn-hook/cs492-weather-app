@@ -6,6 +6,8 @@ import 'package:weatherapp/widgets/location/location_tab_widget.dart';
 import 'package:weatherapp/providers/location_provider.dart';
 import 'package:weatherapp/providers/forecast_provider.dart';
 import 'package:weatherapp/themes/themes.dart' as themes;
+import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 // TODOS: The TODOs are located in Assignment8-1 in canvas assignments
 void main() {
@@ -29,9 +31,9 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: title,
-      theme: themes.lightTheme,
-      darkTheme: themes.darkTheme,
-      themeMode: settingsProvider.darkMode ? ThemeMode.dark : ThemeMode.light,
+      theme: settingsProvider.lightTheme,
+      darkTheme: settingsProvider.darkTheme,
+      themeMode: settingsProvider.themeMode,
       home: MyHomePage(title: title),
     );
   }
@@ -85,6 +87,42 @@ class SettingsButton extends StatelessWidget {
   }
 }
 
+class ColorSetter extends StatelessWidget {
+  final Function(Color) setColorScheme;
+  final Color currentColor;
+
+  ColorSetter({
+    super.key,
+    required this.setColorScheme,
+    required this.currentColor,
+  });
+
+  late Color c;
+
+  @override
+  Widget build(BuildContext context) {
+
+    c = currentColor;
+
+    return Column(
+      children: [
+        ColorPicker(
+          pickerColor: c,
+          onColorChanged: (color) {
+            c = color;
+          },  
+        ),
+        ElevatedButton(
+          onPressed: () {
+            setColorScheme(c);
+          },
+          child: Text('Set Color'),
+        )
+      ],
+    );
+  }
+}
+
 class SettingsDrawer extends StatelessWidget {
   const SettingsDrawer({
     super.key,
@@ -96,11 +134,21 @@ class SettingsDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Switch(
+      child: Column(
+        children: [
+          DrawerHeader(
+            child: Text('Settings'),
+          ),
+          Text(settingsProvider.darkMode ? 'Dark Mode' : 'Light Mode'),
+          Switch(
           value: settingsProvider.darkMode,
           onChanged: (bool value) {
             settingsProvider.toggleMode();
           }),
+          Text('Color Picker'),
+          ColorSetter( setColorScheme: settingsProvider.setColorScheme, currentColor: settingsProvider.darkMode ? settingsProvider.darkTheme.primaryColor : settingsProvider.lightTheme.primaryColor)
+        ],
+      ), 
     );
   }
 }
